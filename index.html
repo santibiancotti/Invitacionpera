@@ -1,0 +1,516 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>San Valentín</title>
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    /* ============================
+       ESTILOS GENERALES y PANTALLA PRINCIPAL
+       ============================ */
+    body {
+      margin: 0;
+      padding: 0;
+      background: #080f1a;
+      font-family: 'Dancing Script', cursive;
+      color: white;
+      overflow: hidden; /* Evita scroll por posiciones extremas */
+    }
+    #mainScreen {
+      position: relative;
+      z-index: 100;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+    }
+    /* Texto principal con degradado y sombra para un toque romántico */
+    #mainScreen .message {
+      font-size: 36px;
+      margin-bottom: 40px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff6ec4, #7873f5);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 8px rgba(255, 105, 180, 0.7);
+    }
+    /* Contenedor para el botón "Sí" */
+    .buttons {
+      position: relative;
+      width: 300px;
+      height: 60px;
+    }
+    /* Estilos comunes para ambos botones */
+    .boton {
+      padding: 12px 24px;
+      font-size: 22px;
+      cursor: pointer;
+      border: none;
+      border-radius: 10px;
+      font-weight: bold;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    /* Botón “Sí”: se ubica dentro del contenedor .buttons */
+    .boton-si {
+      background-color: #ff4d79;
+      color: white;
+      box-shadow: 0 0 10px rgba(255, 77, 121, 0.8);
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
+    .boton-si:hover {
+      background-color: #ff1a5c;
+      transform: scale(1.1);
+    }
+    /* Botón “No”: posicionado fixed para no afectar el tamaño de la pantalla */
+    .boton-no {
+      background-color: #dc3545;
+      color: white;
+      position: fixed;
+      border: none;
+      border-radius: 10px;
+      padding: 12px 24px;
+      font-size: 22px;
+      font-weight: bold;
+      transition: transform 0.3s ease, background 0.3s ease;
+    }
+    .boton-no:hover {
+      background-color: #b71c32;
+    }
+    
+    /* ============================
+       ESTILOS DE LA PANTALLA DE LA ROSA
+       ============================ */
+    /* Se oculta por defecto hasta pulsar “Sí” */
+    #rosa {
+      display: none;
+      position: relative;
+      overflow: hidden;
+      width: 100vw;
+      height: 100vh;
+    }
+    /* Contenedor central para la rosa */
+    .container {
+      position: absolute;
+      left: 50%;
+      top: 50%; /* Centrado verticalmente */
+      transform: translate(-50%, -50%);
+    }
+    .glass {
+      height: 800px;
+      width: 600px;
+      background: #122139;
+      border-radius: 300px 300px 0 0;
+      position: relative;
+    }
+    .glass:before {
+      content: "";
+      height: 40px;
+      width: 40px;
+      transform-origin: center;
+      border: 25px solid #122139;
+      border-radius: 100%;
+      position: absolute;
+      left: 256px;
+      top: -74px;
+    }
+    .glass:after {
+      content: "";
+      position: absolute;
+      height: 15px;
+      width: 600px;
+      background: #a52a2a;
+      top: 100%;
+      left: 0;
+    }
+    .shine {
+      width: 26px;
+      height: 330px;
+      background: white;
+      opacity: 0.2;
+      position: absolute;
+      left: 85%;
+      top: 200px;
+      border-radius: 100px;
+      z-index: 10;
+    }
+    .shine:before {
+      content: "";
+      width: 26px;
+      height: 40px;
+      position: absolute;
+      background: white;
+      top: 365px;
+      border-radius: 100px;
+    }
+    .petals > div {
+      position: absolute;
+      background: #d52d58;
+      width: 85px;
+      height: 120px;
+      top: 200px;
+      transition: all 0.5s ease-out;
+    }
+    .petals > div:nth-child(1) {
+      border-radius: 15px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 1);
+      left: 268px;
+      top: 200px;
+      background: #d52d58;
+    }
+    .petals > div:nth-child(2),
+    .petals > div:nth-child(4),
+    .petals > div:nth-child(6) {
+      background: #b81b43;
+      left: 230px;
+      border-radius: 0 50px 0 50px;
+      transform-origin: bottom right;
+    }
+    .petals > div:nth-child(3),
+    .petals > div:nth-child(5),
+    .petals > div:nth-child(7) {
+      background: #b81b43;
+      left: 300px;
+      border-radius: 50px 0 50px 0;
+      transform-origin: bottom left;
+    }
+    .petals > div:nth-child(2) {
+      z-index: 5;
+      background: #ab1a3f;
+      top: 218px;
+      height: 130px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.5);
+      animation: bloom2 3s ease-in-out;
+      animation-fill-mode: forwards;
+    }
+    .petals > div:nth-child(3) {
+      z-index: 4;
+      background: #ab1a3f;
+      top: 218px;
+      height: 130px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.5);
+      animation: bloom3 3s ease-in-out, glowing 2.5s ease-in-out infinite;
+      animation-fill-mode: forwards;
+    }
+    .petals > div:nth-child(4) {
+      z-index: 3;
+      background: #b81b43;
+      top: 213px;
+      height: 135px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.5);
+      animation: bloom4 3s ease-in-out, glowing 2.5s ease-in-out infinite;
+      animation-fill-mode: forwards;
+    }
+    .petals > div:nth-child(5) {
+      z-index: 2;
+      background: #b81b43;
+      top: 213px;
+      height: 135px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.5);
+      animation: bloom5 3s ease-in-out, glowing 2.5s ease-in-out infinite;
+      animation-fill-mode: forwards;
+    }
+    .petals > div:nth-child(6) {
+      z-index: 1;
+      background: #c9204b;
+      top: 200px;
+      height: 130px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.3);
+      animation: bloom6 3s ease-in-out, glowing 2.5s ease-in-out infinite;
+      animation-fill-mode: forwards;
+    }
+    .petals > div:nth-child(7) {
+      z-index: 0;
+      background: #c9204b;
+      top: 200px;
+      height: 130px;
+      box-shadow: 0px 0px 60px rgba(245, 148, 184, 0.3);
+      animation: bloom7 3s ease-in-out, glowing 2.5s ease-in-out infinite;
+      animation-fill-mode: forwards;
+    }
+    .deadPetals > div {
+      position: absolute;
+      background: #d52d58;
+      width: 20px;
+      height: 15px;
+      top: 200px;
+      border-radius: 0 30px 0 30px;
+      box-shadow: 0px 0px 30px rgba(245, 148, 184, 0.5);
+      transition: all 0.5s ease-out;
+    }
+    .deadPetals > div:nth-child(1) {
+      left: 119229959987px;
+      transform: rotate(-30deg);
+      animation: falling 20s 4s ease-in-out infinite;
+    }
+    .deadPetals > div:nth-child(2) {
+      left: 26331084746px;
+      transform: rotate(-30deg);
+      animation: falling 20s 8s ease-in-out infinite;
+    }
+    .deadPetals > div:nth-child(3) {
+      left: 129759500363px;
+      transform: rotate(-30deg);
+      animation: falling 20s 12s ease-in-out infinite;
+    }
+    .deadPetals > div:nth-child(4) {
+      left: 99323149959px;
+      transform: rotate(-30deg);
+      animation: falling 20s 16s ease-in-out infinite;
+    }
+    .leaves > div:nth-last-child(1) {
+      position: absolute;
+      width: 55px;
+      height: 30px;
+      background: #338f37;
+      top: 334px;
+      left: 278px;
+      border-radius: 100px;
+    }
+    .leaves > div:nth-child(1) {
+      position: absolute;
+      width: 15px;
+      height: 390px;
+      background: #054c05;
+      top: 308px;
+      left: 300px;
+      border-radius: 0 0 100px 100px;
+    }
+    .leaves > div:nth-child(2) {
+      position: absolute;
+      width: 60px;
+      height: 100px;
+      top: 412px;
+      left: 254px;
+      border-radius: 10px 80px 40px 80px;
+      background: #054c05;
+      transform-origin: bottom;
+      box-shadow: inset 10px 10px #066406;
+    }
+    .leaves > div:nth-child(3) {
+      position: absolute;
+      width: 60px;
+      height: 100px;
+      top: 360px;
+      left: 300px;
+      border-radius: 80px 1px 80px 40px;
+      background: #054c05;
+      transform-origin: bottom;
+      transform: rotate(30deg);
+      box-shadow: inset -10px 10px #066406;
+    }
+    .thorns > div {
+      position: absolute;
+      width: 0;
+      height: 0;
+      top: 200px;
+    }
+    .thorns > div:nth-child(odd) {
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-left: 15px solid #054c05;
+      left: 315px;
+    }
+    .thorns > div:nth-child(even) {
+      border-top: 15px solid transparent;
+      border-bottom: 15px solid transparent;
+      border-right: 15px solid #054c05;
+      left: 285px;
+    }
+    .thorns > div:nth-child(1) {
+      top: 465px;
+    }
+    .thorns > div:nth-child(2) {
+      top: 390px;
+    }
+    .thorns > div:nth-child(4) {
+      top: 525px;
+    }
+    @keyframes bloom2 {
+      50% {
+        transform: rotate(-90deg);
+        top: 400px;
+        left: 150px;
+      }
+      100% {
+        transform: rotate(-60deg);
+        top: 615px;
+        left: 100px;
+        background: #71122a;
+        box-shadow: 0 0 0 rgba(245,148,184,0);
+      }
+    }
+    @keyframes bloom3 {
+      100% {
+        transform: rotate(50deg);
+      }
+    }
+    @keyframes bloom4 {
+      100% {
+        transform: rotate(-25deg);
+      }
+    }
+    @keyframes bloom5 {
+      100% {
+        transform: rotate(25deg);
+      }
+    }
+    @keyframes bloom6 {
+      100% {
+        transform: rotate(-10deg);
+      }
+    }
+    @keyframes bloom7 {
+      100% {
+        transform: rotate(10deg);
+      }
+    }
+    @keyframes glowing {
+      50% {
+        background: #d7365f;
+        box-shadow: 0 0 60px rgba(245,148,184,1);
+      }
+    }
+    @keyframes falling {
+      20% {
+        top: 335px;
+        background: #9d193b;
+        box-shadow: 0 0 0 rgba(245,148,184,0);
+      }
+      100% {
+        top: 335px;
+        opacity: 0;
+      }
+    }
+    /* Posicionamiento del mensaje: justo debajo de la flor */
+    .mensaje-final {
+      position: absolute;
+      top: calc(50% + 350px);
+      width: 100%;
+      text-align: center;
+      font-size: 32px;
+      font-weight: bold;
+      background: linear-gradient(45deg, #ff6ec4, #ff85a1);
+      -webkit-background-clip: text;
+      background-clip: text;
+      -webkit-text-fill-color: transparent;
+      text-shadow: 2px 2px 8px rgba(255, 105, 180, 0.7);
+    }
+    /* Botón discreto para volver al menú principal */
+    .volver {
+      position: fixed;
+      top: 20px;
+      left: 20px;
+      background: rgba(0, 0, 0, 0.5);
+      color: white;
+      border: none;
+      padding: 8px 12px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+    .volver:hover {
+      background: rgba(0, 0, 0, 0.7);
+    }
+  </style>
+</head>
+<body>
+  <!-- Pantalla Principal -->
+  <div id="mainScreen">
+    <div class="message">Amo vo quere que el pero sea tu San Valentin??</div>
+    <div class="buttons">
+      <button class="boton boton-si" onclick="mostrarRosa()">Sí</button>
+    </div>
+    <!-- Botón "No" posicionado fixed -->
+    <button class="boton boton-no" id="boton-no" onmouseover="moverBoton()" onmousedown="moverBoton()">No</button>
+  </div>
+
+  <!-- Pantalla de la Rosa (se muestra al pulsar “Sí”) -->
+  <div id="rosa">
+    <!-- Botón para volver al menú principal -->
+    <button class="volver" onclick="volverMenu()">Volver</button>
+    <div class="container">
+      <div class="glass">
+        <div class="shine"></div>
+      </div>
+      <div class="thorns">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="leaves">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="petals">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+      <div class="deadPetals">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+      </div>
+    </div>
+    <div class="mensaje-final">TE AMOO GGGGG</div>
+  </div>
+
+  <script>
+    // Función para posicionar el botón "No" de forma inicial
+    function repositionBoton() {
+      const buttonsContainer = document.querySelector('.buttons');
+      const rect = buttonsContainer.getBoundingClientRect();
+      const botonNo = document.getElementById("boton-no");
+      // Posiciona el botón "No" a la derecha del contenedor con un pequeño margen
+      botonNo.style.left = (rect.right + 20) + "px";
+      botonNo.style.top = rect.top + "px";
+    }
+
+    document.addEventListener("DOMContentLoaded", function() {
+      repositionBoton();
+    });
+
+    function mostrarRosa() {
+      document.getElementById('mainScreen').style.display = 'none';
+      document.getElementById('rosa').style.display = 'block';
+    }
+    function moverBoton() {
+      const botonNo = document.getElementById("boton-no");
+      let x, y;
+      // Calcula una posición aleatoria dentro del viewport para que no se salga
+      do {
+        x = Math.random() * (window.innerWidth - botonNo.offsetWidth);
+        y = Math.random() * (window.innerHeight - botonNo.offsetHeight);
+      } while (
+        Math.abs(x - window.innerWidth / 2) < 150 &&
+        Math.abs(y - window.innerHeight / 2) < 50
+      );
+      botonNo.style.left = x + "px";
+      botonNo.style.top = y + "px";
+    }
+    // Función para volver al menú principal y reconfigurar la pantalla
+    function volverMenu() {
+      document.getElementById('rosa').style.display = 'none';
+      // Aseguramos que se muestre el contenedor principal con display flex
+      document.getElementById('mainScreen').style.display = 'flex';
+      // Espera al siguiente frame para recalcular el layout
+      requestAnimationFrame(repositionBoton);
+    }
+  </script>
+</body>
+</html>

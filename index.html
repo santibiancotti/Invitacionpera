@@ -1,10 +1,10 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>San Valentín</title>
-  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Dancing+Script:wght@400;700&display=swap" rel="stylesheet" />
   <style>
     /* ============================
        ESTILOS GENERALES y PANTALLA PRINCIPAL
@@ -26,11 +26,12 @@
       justify-content: center;
       align-items: center;
       text-align: center;
+      padding: 0 10px;
     }
     /* Texto principal con degradado y sombra para un toque romántico */
     #mainScreen .message {
-      font-size: 36px;
-      margin-bottom: 40px;
+      font-size: clamp(24px, 5vw, 36px);
+      margin-bottom: clamp(20px, 6vw, 40px);
       font-weight: bold;
       background: linear-gradient(45deg, #ff6ec4, #7873f5);
       -webkit-background-clip: text;
@@ -41,16 +42,16 @@
     /* Contenedor para el botón "Sí" */
     .buttons {
       position: relative;
-      width: 300px;
-      height: 60px;
+      width: clamp(200px, 50vw, 300px);
+      height: clamp(40px, 10vw, 60px);
     }
     /* Estilos comunes para ambos botones */
     .boton {
-      padding: 12px 24px;
-      font-size: 22px;
+      padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px);
+      font-size: clamp(16px, 3vw, 22px);
       cursor: pointer;
       border: none;
-      border-radius: 10px;
+      border-radius: clamp(5px, 2vw, 10px);
       font-weight: bold;
       transition: transform 0.3s ease, background 0.3s ease;
     }
@@ -67,15 +68,15 @@
       background-color: #ff1a5c;
       transform: scale(1.1);
     }
-    /* Botón “No”: posicionado fixed para no afectar el tamaño de la pantalla */
+    /* Botón “No”: posicionado fixed para no afectar el layout */
     .boton-no {
       background-color: #dc3545;
       color: white;
       position: fixed;
       border: none;
-      border-radius: 10px;
-      padding: 12px 24px;
-      font-size: 22px;
+      border-radius: clamp(5px, 2vw, 10px);
+      padding: clamp(8px, 2vw, 12px) clamp(16px, 4vw, 24px);
+      font-size: clamp(16px, 3vw, 22px);
       font-weight: bold;
       transition: transform 0.3s ease, background 0.3s ease;
     }
@@ -96,16 +97,19 @@
     }
     /* Contenedor central para la rosa */
     .container {
+      width: 600px;
+      height: 800px;
       position: absolute;
       left: 50%;
-      top: 50%; /* Centrado verticalmente */
-      transform: translate(-50%, -50%);
+      top: 50%;
+      transform: translate(-50%, -50%) scale(1);
+      transform-origin: center;
     }
     .glass {
       height: 800px;
       width: 600px;
       background: #122139;
-      border-radius: 300px 300px 0 0;
+      border-radius: 50% 50% 0 0;
       position: relative;
     }
     .glass:before {
@@ -387,19 +391,26 @@
         opacity: 0;
       }
     }
-    /* Posicionamiento del mensaje: justo debajo de la flor */
+    /* Posicionamiento del mensaje: originalmente se ubicaba con top, pero se ajusta en pantallas pequeñas */
     .mensaje-final {
       position: absolute;
       top: calc(50% + 350px);
       width: 100%;
       text-align: center;
-      font-size: 32px;
+      font-size: clamp(24px, 4vw, 32px);
       font-weight: bold;
       background: linear-gradient(45deg, #ff6ec4, #ff85a1);
       -webkit-background-clip: text;
       background-clip: text;
       -webkit-text-fill-color: transparent;
       text-shadow: 2px 2px 8px rgba(255, 105, 180, 0.7);
+    }
+    /* En pantallas con poca altura, reposicionamos el mensaje para que se vea completo */
+    @media (max-height: 800px) {
+      .mensaje-final {
+        top: auto;
+        bottom: 5%;
+      }
     }
     /* Botón discreto para volver al menú principal */
     .volver {
@@ -417,6 +428,15 @@
     }
     .volver:hover {
       background: rgba(0, 0, 0, 0.7);
+    }
+    
+    /* ============================
+       RESPONSIVIDAD DE LA ROSA
+       ============================ */
+    @media (max-width: 600px), (max-height: 800px) {
+      .container {
+        transform: translate(-50%, -50%) scale(calc(min(100vw / 600, 100vh / 800)));
+      }
     }
   </style>
 </head>
@@ -471,19 +491,16 @@
   </div>
 
   <script>
-    // Función para posicionar el botón "No" de forma inicial
+    // Posiciona el botón "No" relativo al contenedor de botones
     function repositionBoton() {
       const buttonsContainer = document.querySelector('.buttons');
       const rect = buttonsContainer.getBoundingClientRect();
       const botonNo = document.getElementById("boton-no");
-      // Posiciona el botón "No" a la derecha del contenedor con un pequeño margen
       botonNo.style.left = (rect.right + 20) + "px";
       botonNo.style.top = rect.top + "px";
     }
 
-    document.addEventListener("DOMContentLoaded", function() {
-      repositionBoton();
-    });
+    document.addEventListener("DOMContentLoaded", repositionBoton);
 
     function mostrarRosa() {
       document.getElementById('mainScreen').style.display = 'none';
@@ -492,7 +509,6 @@
     function moverBoton() {
       const botonNo = document.getElementById("boton-no");
       let x, y;
-      // Calcula una posición aleatoria dentro del viewport para que no se salga
       do {
         x = Math.random() * (window.innerWidth - botonNo.offsetWidth);
         y = Math.random() * (window.innerHeight - botonNo.offsetHeight);
@@ -503,12 +519,9 @@
       botonNo.style.left = x + "px";
       botonNo.style.top = y + "px";
     }
-    // Función para volver al menú principal y reconfigurar la pantalla
     function volverMenu() {
       document.getElementById('rosa').style.display = 'none';
-      // Aseguramos que se muestre el contenedor principal con display flex
       document.getElementById('mainScreen').style.display = 'flex';
-      // Espera al siguiente frame para recalcular el layout
       requestAnimationFrame(repositionBoton);
     }
   </script>
